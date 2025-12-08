@@ -1,0 +1,213 @@
+✅ REPLIT SUPER PROMPT (FULL INTERVIEW SYSTEM — FRONTEND + BACKEND)
+
+Build a fully functional AI Interview System with frontend + backend.
+The goal is to create a separate interview web app (apart from the HR dashboard).
+This app will be accessed only through a unique link sent to each candidate.
+
+🎯 Core Requirements
+1. Tech Stack
+
+Use:
+
+Frontend: HTML, CSS, JavaScript (clean components)
+
+Backend: Node.js + Express
+
+Database: SQLite (or simple JSON storage if easier)
+
+Video / Mic: use browser getUserMedia() (no third-party API required)
+
+🎫 Interview Link & Authentication
+
+Create a system where:
+
+Admin generates a unique InterviewID + Password pair
+
+Candidate receives a link like:
+
+/interview/:interviewId
+
+
+When candidate opens the link, a login page shows:
+
+Interview ID (auto-filled)
+
+Password (candidate enters)
+
+After login:
+
+Verify credentials from database
+
+Check if current time is within allowed interview time
+
+If expired → show “Access Expired” page
+
+Candidate can only enter once and only within the scheduled time window.
+
+⏳ Time-Limited Interview Access
+
+Each interview entry includes:
+
+{
+  interviewId,
+  password,
+  candidateName,
+  startTime,
+  endTime,
+  isUsed: false
+}
+
+
+Rules:
+
+If before startTime → show “Interview not started yet”
+
+If after endTime → show “Link expired”
+
+When candidate logs in → mark isUsed = true (optional)
+
+Countdown timer in UI:
+
+Show "Remaining Time: 14:32"
+
+When time ends → auto logout + disable UI
+
+🎥 Interview Room UI Requirements
+
+Create a fully designed interview screen with:
+
+Left Side: Candidate Camera Feed
+
+Large video window
+
+Mic on/off indicator
+
+Camera on/off indicator
+
+Right Side: AI Panel
+
+Question displayed
+
+User answer text (for debugging)
+
+Placeholder area for future AI transcripts
+
+“Next Question” button (dummy action)
+
+Top Bar
+
+Candidate Name
+
+Interview Role
+
+Countdown timer
+
+Exit button
+
+Bottom Controls
+
+Start Interview button
+
+End Interview button
+
+Mute / Unmute
+
+Camera On / Off
+
+🌐 Pages Required
+1. Landing Page
+
+Simple page explaining:
+“Welcome to AI Interview System — Powered by Replit”
+
+2. Login Page
+
+Fields:
+
+Interview ID (pre-filled)
+
+Password
+
+"Begin Interview" Button
+
+3. Interview Page
+
+Full UI as described above.
+
+4. Expired / Not Started Page
+
+Show appropriate message.
+
+📁 Folder Structure
+
+Replit should generate:
+
+/public
+   /css
+   /js
+   /img
+   index.html
+   login.html
+   interview.html
+   expired.html
+
+/server
+   server.js
+   database.js
+   routes.js
+
+/interviews.json   (stores interview data)
+
+📡 Backend API Endpoints
+POST /api/auth
+
+Validate ID + Password
+
+Check schedule window
+
+Respond with success or error
+
+GET /api/interview/:id
+
+Get interview info
+
+🧪 Dummy Interview Logic
+
+Create a placeholder array:
+
+[
+ "Tell me about yourself.",
+ "Why do you want this job?",
+ "What are your strengths?",
+ "Describe a challenge you overcame."
+]
+
+
+Display 1 question at a time.
+
+🎨 UI Style
+
+Use:
+
+Clean white background
+
+Light grey borders
+
+Blue accents (#2563eb or similar)
+
+Modern SaaS style (Notion / Linear / Figma vibes)
+
+Rounded components
+
+Smooth spacing
+
+Responsive layout
+
+No unnecessary animations
+
+⚠️ IMPORTANT
+
+Make the system fully working end-to-end WITHOUT AI integration for now.
+Only structure and architecture should be prepared so AI can be added later.
+
+END OF PROMPT
