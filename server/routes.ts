@@ -1,6 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
+import { voiceInterviewService } from "./voice-service";
 import { loginSchema, insertInterviewSchema, updateInterviewSchema, type InterviewSession } from "@shared/schema";
 
 export async function registerRoutes(
@@ -268,6 +269,133 @@ export async function registerRoutes(
     } catch (error) {
       console.error("Error deleting interview:", error);
       res.status(500).json({ message: "Failed to delete interview" });
+    }
+  });
+
+  // ===== VOICE INTERVIEW ROUTES =====
+
+  // Start voice interview session
+  app.post("/api/interview/start-voice", async (req, res) => {
+    try {
+      const { interviewId, candidateName, role } = req.body;
+
+      if (!interviewId || !candidateName || !role) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const session = await voiceInterviewService.startVoiceInterview(
+        interviewId,
+        candidateName,
+        role
+      );
+
+      res.json({
+        sessionId: session.sessionId,
+        greeting: session.messages[0]?.text,
+        questions: voiceInterviewService.getQuestions(),
+        currentQuestion: voiceInterviewService.getCurrentQuestion(session.sessionId),
+      });
+    } catch (error) {
+      console.error("Error starting voice interview:", error);
+      res.status(500).json({ message: "Failed to start voice interview" });
+    }
+  });
+
+  // Process candidate audio and get AI response
+  app.post("/api/interview/send-audio", async (req, res) => {
+    try {
+      const { sessionId, candidateText } = req.body;
+
+      if (!sessionId || !candidateText) {
+        return res.status(400).json({ message: "Missing required fields" });
+      }
+
+      const session = voiceInterviewService.getSession(sessionId);
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      const result = await voiceInterviewService.processAudioAndRespond(
+        sessionId,
+        candidateText
+      );
+
+      res.json({
+        aiResponse: result.aiResponse,
+        nextQuestion: result.nextQuestion,
+        sessionEnded: result.sessionEnded,
+        messages: voiceInterviewService.getSessionMessages(sessionId),
+      });
+    } catch (error) {
+      console.error("Error processing audio:", error);
+      res.status(500).json({ message: "Failed to process audio" });
+    }
+  });
+
+  // Get AI response (for voice synthesis)
+  app.post("/api/interview/ai-respond", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+
+      if (!sessionId) {
+        return res.status(400).json({ message: "Missing sessionId" });
+      }
+
+      const session = voiceInterviewService.getSession(sessionId);
+      if (!session) {
+        return res.status(404).json({ message: "Session not found" });
+      }
+
+      const currentQuestion = voiceInterviewService.getCurrentQuestion(sessionId);
+
+      res.json({
+        question: currentQuestion,
+        messages: voiceInterviewService.getSessionMessages(sessionId),
+        questionIndex: session.currentQuestionIndex,
+        totalQuestions: voiceInterviewService.getQuestions().length,
+      });
+    } catch (error) {
+      console.error("Error getting AI response:", error);
+      res.status(500).json({ message: "Failed to get AI response" });
+    }
+  });
+
+  // Get transcript for download
+  app.get("/api/interview/:interviewId/transcript/:sessionId", async (req, res) => {
+    try {
+      const { interviewId, sessionId } = req.params;
+
+      const transcript = await voiceInterviewService.getTranscript(
+        interviewId,
+        sessionId
+      );
+
+      if (!transcript) {
+        return res.status(404).json({ message: "Transcript not found" });
+      }
+
+      res.json(transcript);
+    } catch (error) {
+      console.error("Error fetching transcript:", error);
+      res.status(500).json({ message: "Failed to fetch transcript" });
+    }
+  });
+
+  // End voice interview session
+  app.post("/api/interview/end-session", async (req, res) => {
+    try {
+      const { sessionId } = req.body;
+
+      if (!sessionId) {
+        return res.status(400).json({ message: "Missing sessionId" });
+      }
+
+      voiceInterviewService.endSession(sessionId);
+
+      res.json({ message: "Session ended successfully" });
+    } catch (error) {
+      console.error("Error ending session:", error);
+      res.status(500).json({ message: "Failed to end session" });
     }
   });
 

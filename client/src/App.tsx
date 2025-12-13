@@ -7,6 +7,7 @@ import NotFound from "@/pages/not-found";
 import LandingPage from "@/pages/landing";
 import LoginPage from "@/pages/login";
 import InterviewRoomPage from "@/pages/interview-room";
+import VoiceInterviewRoomPage from "@/pages/voice-interview-room";
 import ExpiredPage from "@/pages/expired";
 import DashboardPage from "@/pages/dashboard";
 
@@ -17,6 +18,7 @@ function Router() {
       <Route path="/interview" component={LoginPage} />
       <Route path="/interview/:interviewId" component={LoginPage} />
       <Route path="/interview/:interviewId/room" component={InterviewRoomPage} />
+      <Route path="/interview/:interviewId/voice-room" component={VoiceInterviewRoomPage} />
       <Route path="/interview/expired">
         {() => <ExpiredPage type="expired" />}
       </Route>

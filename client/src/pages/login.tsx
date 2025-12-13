@@ -10,7 +10,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { useToast } from "@/hooks/use-toast";
 import { loginSchema, type LoginCredentials, type InterviewSession } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
-import { Video, Eye, EyeOff, Loader2, ArrowLeft } from "lucide-react";
+import { Video, Eye, EyeOff, Loader2, ArrowLeft, Mic } from "lucide-react";
 import { Link } from "wouter";
 
 export default function LoginPage() {
@@ -26,6 +26,8 @@ export default function LoginPage() {
       password: "",
     },
   });
+
+  const [interviewMode, setInterviewMode] = useState<"standard" | "voice" | null>(null);
 
   const loginMutation = useMutation({
     mutationFn: async (data: LoginCredentials) => {
@@ -51,7 +53,9 @@ export default function LoginPage() {
     },
     onSuccess: (data) => {
       sessionStorage.setItem("interviewSession", JSON.stringify(data));
-      setLocation(`/interview/${data.id}/room`);
+      const mode = interviewMode || "standard";
+      const route = mode === "voice" ? "voice-room" : "room";
+      setLocation(`/interview/${data.id}/${route}`);
     },
     onError: (error: any) => {
       // Redirect to appropriate page based on error type
@@ -172,11 +176,36 @@ export default function LoginPage() {
                     )}
                   />
 
+                  {/* Interview Mode Selection */}
+                  <div className="space-y-2">
+                    <FormLabel>Interview Mode</FormLabel>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        type="button"
+                        variant={interviewMode === "standard" ? "default" : "outline"}
+                        onClick={() => setInterviewMode("standard")}
+                        className="gap-2"
+                      >
+                        <Video className="w-4 h-4" />
+                        <span className="text-xs sm:text-sm">Standard</span>
+                      </Button>
+                      <Button
+                        type="button"
+                        variant={interviewMode === "voice" ? "default" : "outline"}
+                        onClick={() => setInterviewMode("voice")}
+                        className="gap-2"
+                      >
+                        <Mic className="w-4 h-4" />
+                        <span className="text-xs sm:text-sm">AI Voice</span>
+                      </Button>
+                    </div>
+                  </div>
+
                   <Button
                     type="submit"
                     className="w-full"
                     size="lg"
-                    disabled={loginMutation.isPending}
+                    disabled={loginMutation.isPending || !interviewMode}
                     data-testid="button-begin-interview"
                   >
                     {loginMutation.isPending ? (

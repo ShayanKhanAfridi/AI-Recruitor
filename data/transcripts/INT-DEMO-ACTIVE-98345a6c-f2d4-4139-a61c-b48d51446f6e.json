@@ -1,0 +1,18 @@
+{
+  "interviewId": "INT-DEMO-ACTIVE",
+  "sessionId": "98345a6c-f2d4-4139-a61c-b48d51446f6e",
+  "candidateName": "John Smith",
+  "role": "Senior Software Engineer",
+  "startedAt": "2025-12-08T18:47:21.398Z",
+  "completedAt": "2025-12-08T18:47:50.148Z",
+  "messages": [
+    {
+      "id": "06ffe1e1-eb4d-4233-bc29-5938c23abc22",
+      "role": "ai",
+      "text": "Hello John Smith, let's start your interview. I'm excited to learn more about you. Let's begin with the first question.",
+      "timestamp": "2025-12-08T18:47:21.398Z"
+    }
+  ],
+  "totalQuestions": 8,
+  "questionsAnswered": 1
+}
